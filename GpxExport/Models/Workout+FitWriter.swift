@@ -6,7 +6,6 @@
 //  Copyright © 2019 Mario Martelli. All rights reserved.
 //
 
-import Foundation
 import HealthKit
 import CoreLocation
 import FitDataProtocol
@@ -15,19 +14,12 @@ import AntMessageProtocol
 
 extension Workout {
     func writeFit(completionHandler: @escaping(_ url: URL?) -> Void) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH.mm.ss"
-
-        let fileName = "\(formatter.string(from: startDate)) - \(activityType)"
-
-        let targetURL = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent(fileName)
-            .appendingPathExtension("fit")
+        let fileName = "\(DateFormatter.exportFileFormatter.string(from: startDate)) - \(activityType)"
+        let targetURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName).appendingPathExtension("fit")
 
         DispatchQueue.global(qos: .background).sync {
             let time = FitTime(date: self.startDate)
             let serial = ValidatedBinaryInteger(value: UInt32(123), valid: true)
-
             let file: FileHandle
 
             do {
@@ -37,8 +29,8 @@ extension Workout {
                 }
                 manager.createFile(atPath: targetURL.path, contents: Data())
                 file = try FileHandle(forWritingTo: targetURL)
-            } catch let err {
-                print(err)
+            } catch {
+                print(error)
 
                 DispatchQueue.main.async {
                     completionHandler(nil)
@@ -50,7 +42,7 @@ extension Workout {
             let records = self.createRecords()
             let productId = ValidatedBinaryInteger(value: UInt16(16), valid: true)
 
-            var messages: [FitMessage] = []
+            var messages = [FitMessage]()
             messages.append(self.createActivityMessage())
             messages.append(contentsOf: records)
             messages.append(self.createSessionMessage(time: time,
@@ -77,7 +69,7 @@ extension Workout {
                     completionHandler(nil)
                 }
             }
-       }
+        }
     }
 
     func createActivityMessage() -> ActivityMessage {
@@ -115,7 +107,7 @@ extension Workout {
         let torqueEffectiveness = TorqueEffectiveness.nilSelf
         let pedalSmoothness = PedalSmoothness.nilSelf
 
-        for location in self.route {
+        for location in self.route.locations {
             var heartrate: UInt8 = 0
             while (currentHeartrateIndex < self.heartRate.count) && (location.timestamp > self.heartRate[currentHeartrateIndex].startDate) {
                 currentHeartrate = self.heartRate[currentHeartrateIndex].quantity.doubleValue(for: bpmUnit)

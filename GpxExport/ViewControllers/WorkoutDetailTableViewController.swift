@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import HealthKit
 
-class WorkoutDetailTableViewController: UITableViewController {
+final class WorkoutDetailTableViewController: UITableViewController {
     @IBOutlet private weak var dateLabel: UILabel!
     @IBOutlet private weak var distanceLabel: UILabel!
     @IBOutlet private weak var durationLabel: UILabel!
@@ -37,30 +37,30 @@ class WorkoutDetailTableViewController: UITableViewController {
     // MARK: Data source
 
     private func loadData() {
-        workoutStore.heartRate(for: hkWorkout) { (rates, error) in
-            guard let heartRateSamples = rates, error == nil else {
-                print(error!.localizedDescription)
+        workoutStore.heartRate(for: hkWorkout) { result in
+            switch result {
+            case .success(let heartRateSamples):
+                self.workoutStore.route(for: self.hkWorkout) { result in
+                    switch result {
+                    case .success(let locations):
+                        self.workout = Workout(workout: self.hkWorkout, locations: locations, heartRate: heartRateSamples)
+
+                        DispatchQueue.main.async {
+                            self.setData()
+                        }
+                    case .failure(let error):
+                        print(error.localizedDescription)
+
+                        DispatchQueue.main.async {
+                            self.resetData()
+                        }
+                    }
+                }
+            case .failure(let error):
+                print(error.localizedDescription)
+
                 DispatchQueue.main.async {
                     self.resetData()
-                }
-
-                return
-            }
-
-            self.workoutStore.route(for: self.hkWorkout) { (maybeLocations, error) in
-                guard let locations = maybeLocations, error == nil else {
-                    print(error!.localizedDescription)
-                    DispatchQueue.main.async {
-                        self.resetData()
-                    }
-
-                    return
-                }
-
-                self.workout = Workout(workout: self.hkWorkout, route: locations, heartRate: heartRateSamples)
-
-                DispatchQueue.main.async {
-                    self.setData()
                 }
             }
         }
@@ -145,7 +145,7 @@ extension WorkoutDetailTableViewController: MKMapViewDelegate {
         let polylineRender = MKPolylineRenderer(overlay: overlay)
 
         if overlay is MKPolyline {
-            polylineRender.strokeColor = UIColor.blue.withAlphaComponent(0.5)
+            polylineRender.strokeColor = hkWorkout.workoutActivityType.color.withAlphaComponent(0.5)
             polylineRender.lineWidth = 3
         }
 

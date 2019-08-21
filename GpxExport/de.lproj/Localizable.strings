@@ -1,4 +1,10 @@
 
+/* Format Selection Content */
+"actionSheet.formatSelection.content" = "Wähle das Dateiformat in das exportiert werden soll.";
+
+/* Action Sheet: File Format selection */
+"actionSheet.formatSelection.title" = "Welches Format soll exportiert werden?";
+
 /* Bar Button: Select Workouts */
 "bar.button.select" = "Auswählen";
 
@@ -14,12 +20,11 @@
 /* Workout Activity Type: Run */
 "workout.activity.type.running" = "Laufen";
 
-/* Workout Activity Type: Walk */
-"workout.activity.type.walking" = "Gehen";
-
 /* Workout Activity Type: Swimming */
 "workout.activity.type.swimming" = "Schwimmen";
 
-/* Action Sheet: File Format selection */
-"actionSheet.formatSelection.title" = "Welches Format soll exportiert werden?";
-"actionSheet.formatSelection.content" = "Wähle das Dateiformat in das exportiert werden soll.";
+/* Workout Activity Type: Walk */
+"workout.activity.type.walking" = "Gehen";
+
+/* No comment provided by engineer. */
+"workouts.loading" = "Lade...";

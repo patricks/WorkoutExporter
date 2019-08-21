@@ -6,7 +6,6 @@
 //  Copyright © 2019 Mario Martelli. All rights reserved.
 //
 
-import Foundation
 import HealthKit
 import CoreLocation
 
@@ -17,10 +16,7 @@ extension Workout {
         let bpmUnit = HKUnit(from: "count/min")
         var heartrateString = ""
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH.mm.ss"
-
-        let fileName = "\(formatter.string(from: startDate)) - \(activityType)"
+        let fileName = "\(DateFormatter.exportFileFormatter.string(from: startDate)) - \(activityType)"
 
         let targetURL = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent(fileName)
@@ -49,7 +45,7 @@ extension Workout {
                 file.write(header)
             }
 
-            for location in self.route {
+            for location in self.route.locations {
                 while (currentHeartrateIndex < self.heartRate.count) && (location.timestamp > self.heartRate[currentHeartrateIndex].startDate) {
                     currentHeartrate = self.heartRate[currentHeartrateIndex].quantity.doubleValue(for: bpmUnit)
                     currentHeartrateIndex += 1

@@ -6,7 +6,6 @@
 //  Copyright © 2017 Mario Martelli. All rights reserved.
 //
 
-import Foundation
 import HealthKit
 import MapKit
 import AntMessageProtocol
@@ -18,7 +17,7 @@ enum ExportFileType {
 
 struct Workout {
     private var hkWorkout: HKWorkout
-    var route: [CLLocation]
+    var route: Route
     var heartRate: [HKQuantitySample]
     var startDate: Date
 
@@ -47,9 +46,7 @@ struct Workout {
     }
 
     var polyline: MKPolyline {
-        let coordinates = route.map { $0.coordinate }
-        let polyline = MKPolyline(coordinates: coordinates, count: coordinates.count)
-        return polyline
+        return route.polyline
     }
 
     var maxHeartRate: Int {
@@ -82,11 +79,11 @@ struct Workout {
         return hkWorkout.duration
     }
 
-    init(workout: HKWorkout, route: [CLLocation], heartRate: [HKQuantitySample]) {
-        self.route = route
+    init(workout: HKWorkout, locations: [CLLocation], heartRate: [HKQuantitySample]) {
+        self.route = Route(activityType: workout.workoutActivityType, locations: locations)
         self.heartRate = heartRate
 
-        if let timestamp = route.first?.timestamp {
+        if let timestamp = locations.first?.timestamp {
             self.startDate = timestamp
         } else {
             self.startDate = Date()

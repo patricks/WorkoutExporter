@@ -11,6 +11,9 @@
 /* Class = "UITableViewSection"; headerTitle = "Map"; ObjectID = "FGF-Xg-e50"; */
 "FGF-Xg-e50.headerTitle" = "Karte";
 
+/* Class = "UILabel"; text = "Duration"; ObjectID = "ij0-w5-wW7"; */
+"ij0-w5-wW7.text" = "Dauer";
+
 /* Class = "UITableViewSection"; headerTitle = "Workout"; ObjectID = "J21-eh-4cj"; */
 "J21-eh-4cj.headerTitle" = "Training";
 
@@ -20,11 +23,14 @@
 /* Class = "UILabel"; text = "60bpm"; ObjectID = "KEI-lY-1QR"; */
 "KEI-lY-1QR.text" = "60bpm";
 
-/* Class = "UILabel"; text = "Maximum"; ObjectID = "SHR-hm-92v"; */
-"SHR-hm-92v.text" = "Maximum";
+/* Class = "UILabel"; text = "24.12.2018"; ObjectID = "rf4-Bc-rht"; */
+"rf4-Bc-rht.text" = "24.12.2018";
 
 /* Class = "UILabel"; text = "0m"; ObjectID = "Sd0-EC-T80"; */
 "Sd0-EC-T80.text" = "0m";
+
+/* Class = "UILabel"; text = "Maximum"; ObjectID = "SHR-hm-92v"; */
+"SHR-hm-92v.text" = "Maximum";
 
 /* Class = "UILabel"; text = "Distance"; ObjectID = "Utg-17-njm"; */
 "Utg-17-njm.text" = "Distanz";
@@ -32,11 +38,14 @@
 /* Class = "UILabel"; text = "0m"; ObjectID = "Uzf-M2-KyS"; */
 "Uzf-M2-KyS.text" = "0m";
 
-/* Class = "UILabel"; text = "Duration"; ObjectID = "ij0-w5-wW7"; */
-"ij0-w5-wW7.text" = "Dauer";
+/* Class = "UINavigationItem"; title = "Workouts"; ObjectID = "83U-HN-5BK"; */
+"83U-HN-5BK.title" = "Trainings";
 
-/* Class = "UINavigationItem"; title = "Workouts"; ObjectID = "k82-iG-bPt"; */
-"k82-iG-bPt.title" = "Trainings";
+/* Class = "UISegmentedControl"; 9Ad-Jx-I9Z.segmentTitles[0] = "List"; ObjectID = "9Ad-Jx-I9Z"; */
+"9Ad-Jx-I9Z.segmentTitles[0]" = "Liste";
 
-/* Class = "UILabel"; text = "24.12.2018"; ObjectID = "rf4-Bc-rht"; */
-"rf4-Bc-rht.text" = "24.12.2018";
+/* Class = "UISegmentedControl"; 9Ad-Jx-I9Z.segmentTitles[1] = "Map"; ObjectID = "9Ad-Jx-I9Z"; */
+"9Ad-Jx-I9Z.segmentTitles[1]" = "Karte";
+
+/* Class = "UIBarButtonItem"; title = "Share"; ObjectID = "GfN-4N-Taq"; */
+"GfN-4N-Taq.title" = "Teilen";

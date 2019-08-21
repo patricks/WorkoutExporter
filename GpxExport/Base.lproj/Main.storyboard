@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14854.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Bsl-BH-UOm">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14865.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="1Qt-hR-7VE">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14806.4"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14819.2"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -13,7 +13,7 @@
             <objects>
                 <tableViewController id="Ohu-8d-4gr" customClass="WorkoutDetailTableViewController" customModule="GpxExport" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="Iaz-1F-KSU">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
@@ -192,12 +192,12 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u4y-uQ-fby" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2473" y="400"/>
+            <point key="canvasLocation" x="3332" y="-352"/>
         </scene>
-        <!--Workouts-->
+        <!--Workouts Table View Controller-->
         <scene sceneID="bhg-39-hVb">
             <objects>
-                <tableViewController id="6yE-k5-Ihl" customClass="WorkoutsTableViewController" customModule="GpxExport" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="WorkoutsTableViewController" id="6yE-k5-Ihl" customClass="WorkoutsTableViewController" customModule="GpxExport" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="44" sectionFooterHeight="22" id="UZU-4K-x2Q">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -207,55 +207,130 @@
                             <outlet property="delegate" destination="6yE-k5-Ihl" id="6z1-j4-RPc"/>
                         </connections>
                     </tableView>
-                    <toolbarItems>
-                        <barButtonItem systemItem="action" id="UDN-3i-Afx">
-                            <connections>
-                                <action selector="didPressShareBarButtonItem:" destination="6yE-k5-Ihl" id="OOS-OI-hh0"/>
-                            </connections>
-                        </barButtonItem>
-                    </toolbarItems>
-                    <navigationItem key="navigationItem" title="Workouts" id="k82-iG-bPt"/>
-                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="k82-iG-bPt"/>
                     <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="EZL-FJ-PnB">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </refreshControl>
                     <connections>
-                        <outlet property="sharingBarButtonItem" destination="UDN-3i-Afx" id="hqa-g6-u0s"/>
                         <segue destination="Ohu-8d-4gr" kind="show" identifier="detailViewSegue" id="JBa-j0-QoF"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1ll-uv-Ohm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1658" y="400"/>
+            <point key="canvasLocation" x="2473" y="401"/>
+        </scene>
+        <!--Workouts-->
+        <scene sceneID="lA1-6S-n9K">
+            <objects>
+                <viewController id="4zP-lL-oHG" customClass="WorkoutsViewController" customModule="GpxExport" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="hzF-sI-hhQ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vb5-UR-XwA">
+                                <rect key="frame" x="0.0" y="96" width="375" height="55"/>
+                                <subviews>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="9Ad-Jx-I9Z">
+                                        <rect key="frame" x="16" y="8" width="343" height="32"/>
+                                        <segments>
+                                            <segment title="List"/>
+                                            <segment title="Map"/>
+                                        </segments>
+                                        <connections>
+                                            <action selector="didChangeSegmentedControl:" destination="4zP-lL-oHG" eventType="valueChanged" id="KGS-xX-rjg"/>
+                                        </connections>
+                                    </segmentedControl>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstItem="9Ad-Jx-I9Z" firstAttribute="top" secondItem="Vb5-UR-XwA" secondAttribute="top" constant="8" id="FI4-fa-Xwi"/>
+                                    <constraint firstAttribute="trailing" secondItem="9Ad-Jx-I9Z" secondAttribute="trailing" constant="16" id="Uaf-qR-Uer"/>
+                                    <constraint firstItem="9Ad-Jx-I9Z" firstAttribute="leading" secondItem="Vb5-UR-XwA" secondAttribute="leading" constant="16" id="fZw-YZ-hX5"/>
+                                    <constraint firstAttribute="bottom" secondItem="9Ad-Jx-I9Z" secondAttribute="bottom" constant="16" id="qom-vN-F2r"/>
+                                </constraints>
+                            </view>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hmY-5i-EzM">
+                                <rect key="frame" x="0.0" y="151" width="375" height="516"/>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="QKE-v7-Hll" firstAttribute="trailing" secondItem="hmY-5i-EzM" secondAttribute="trailing" id="1LY-3B-1yt"/>
+                            <constraint firstItem="hmY-5i-EzM" firstAttribute="leading" secondItem="QKE-v7-Hll" secondAttribute="leading" id="2po-86-TMX"/>
+                            <constraint firstItem="Vb5-UR-XwA" firstAttribute="trailing" secondItem="QKE-v7-Hll" secondAttribute="trailing" id="BQX-pe-JDQ"/>
+                            <constraint firstItem="Vb5-UR-XwA" firstAttribute="leading" secondItem="QKE-v7-Hll" secondAttribute="leading" id="Mtt-JP-qC8"/>
+                            <constraint firstItem="Vb5-UR-XwA" firstAttribute="top" secondItem="QKE-v7-Hll" secondAttribute="top" id="N0t-Na-5Qa"/>
+                            <constraint firstAttribute="bottom" secondItem="hmY-5i-EzM" secondAttribute="bottom" id="RYp-Hd-4ty"/>
+                            <constraint firstItem="hmY-5i-EzM" firstAttribute="top" secondItem="Vb5-UR-XwA" secondAttribute="bottom" id="Ya8-vk-b1M"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="QKE-v7-Hll"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Workouts" id="83U-HN-5BK">
+                        <barButtonItem key="rightBarButtonItem" title="Share" id="GfN-4N-Taq">
+                            <connections>
+                                <action selector="didPressShareButton:" destination="4zP-lL-oHG" id="wac-gA-wje"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="containerView" destination="hmY-5i-EzM" id="Hc2-70-O17"/>
+                        <outlet property="segmentedControl" destination="9Ad-Jx-I9Z" id="RhG-Dg-Pok"/>
+                        <outlet property="shareBarButtonItem" destination="GfN-4N-Taq" id="uFJ-fa-pTZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GCe-lQ-TUi" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1656.8" y="-352.17391304347831"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="obA-Sh-LHV">
+        <scene sceneID="en3-v9-noh">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Bsl-BH-UOm" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="1Qt-hR-7VE" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="E8n-NV-FYC">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="wKE-Uk-b0u">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="tintColor" name="tintColor"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
-                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="AOp-Zo-bOK">
-                        <autoresizingMask key="autoresizingMask"/>
-                    </toolbar>
                     <connections>
-                        <segue destination="6yE-k5-Ihl" kind="relationship" relationship="rootViewController" id="jql-yL-Bdd"/>
+                        <segue destination="4zP-lL-oHG" kind="relationship" relationship="rootViewController" id="CSh-2s-YfC"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="bF9-se-rhq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="njj-1Q-j5g" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="703" y="400"/>
+            <point key="canvasLocation" x="702" y="-352"/>
+        </scene>
+        <!--Workouts Map View Controller-->
+        <scene sceneID="80c-Xe-zYi">
+            <objects>
+                <viewController storyboardIdentifier="WorkoutsMapViewController" id="0P3-xI-zSB" customClass="WorkoutsMapViewController" customModule="GpxExport" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Dfi-b8-tPQ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="KZk-m8-UUh">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="KZk-m8-UUh" firstAttribute="leading" secondItem="Dfi-b8-tPQ" secondAttribute="leading" id="E8m-Hp-Jpj"/>
+                            <constraint firstAttribute="trailing" secondItem="KZk-m8-UUh" secondAttribute="trailing" id="Wno-sE-wvg"/>
+                            <constraint firstAttribute="bottom" secondItem="KZk-m8-UUh" secondAttribute="bottom" id="kkJ-Mn-MZF"/>
+                            <constraint firstItem="KZk-m8-UUh" firstAttribute="top" secondItem="Dfi-b8-tPQ" secondAttribute="top" id="lsZ-lR-xMy"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="khQ-ma-4Jo"/>
+                    </view>
+                    <connections>
+                        <outlet property="mapView" destination="KZk-m8-UUh" id="Vq7-Fe-zit"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="COz-nQ-5rq" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2473" y="-1017"/>
         </scene>
     </scenes>
-    <resources>
-        <namedColor name="tintColor">
-            <color red="0.0" green="0.4779999852180481" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-    </resources>
     <color key="tintColor" name="tintColor"/>
 </document>

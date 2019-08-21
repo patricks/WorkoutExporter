@@ -1,17 +1,21 @@
 import UIKit
 import HealthKit
 
-class WorkoutsTableViewController: UITableViewController {
+protocol WorkoutsTableViewControllerDelegate: class {
+    func didSelectWorkouts(count: Int?)
+}
+
+final class WorkoutsTableViewController: UITableViewController {
     private enum WorkoutsSegues: String {
         case detailViewSegue
         case finishedCreatingWorkout
     }
 
-    @IBOutlet weak var sharingBarButtonItem: UIBarButtonItem!
-
-    lazy private var workoutStore: WorkoutDataStore = {
+    private lazy var workoutStore: WorkoutDataStore = {
         return WorkoutDataStore()
     }()
+
+    weak var delegate: WorkoutsTableViewControllerDelegate?
 
     private var workouts: [HKWorkout]?
     private var tableSections: [String]?
@@ -24,7 +28,6 @@ class WorkoutsTableViewController: UITableViewController {
         super.viewDidLoad()
 
         setupUI()
-        authorizeHealthKit()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -35,20 +38,23 @@ class WorkoutsTableViewController: UITableViewController {
 
     // MARK: Data source
 
-    func reloadWorkouts() {
-        workoutStore.loadWorkouts { (workouts, _) in
-            if let appleWorkouts = workouts?.filter({
-                if let filter = $0.sourceRevision.productType?.contains("Watch") {
-                    return filter
-                } else {
-                    return false
+    private func reloadWorkouts() {
+        workoutStore.loadWorkouts { result in
+            switch result {
+            case .success(let workouts):
+                let watchWorkouts = workouts.filter {
+                    if let filter = $0.sourceRevision.productType?.contains("Watch") {
+                        return filter
+                    } else {
+                        return false
+                    }
                 }
-            }) {
-                self.workouts = appleWorkouts
+
+                self.workouts = watchWorkouts
                 self.tableSections = []
 
                 self.workoutSections = [:]
-                for workout in appleWorkouts {
+                for workout in watchWorkouts {
                     let key = workout.formattedStartDateForSection
                     if self.workoutSections[key] == nil {
                         self.workoutSections[key] = [workout]
@@ -57,56 +63,23 @@ class WorkoutsTableViewController: UITableViewController {
                         self.workoutSections[key]?.append(workout)
                     }
                 }
-            }
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
 
-    private func authorizeHealthKit() {
-        HealthKitSetupAssistant.authorizeHealthKit { (authorized, error) in
-            guard authorized else {
-                let baseMessage = "HealthKit Authorization Failed"
-
-                if let error = error {
-                    print("\(baseMessage). Reason: \(error.localizedDescription)")
-                } else {
-                    print(baseMessage)
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
                 }
-
-                return
+            case .failure(let error):
+                print(error)
             }
-
-            print("HealthKit Successfully Authorized.")
         }
     }
 
     @objc func handleRefresh(refreshControl: UIRefreshControl) {
         reloadWorkouts()
-        self.tableView.reloadData()
+        tableView.reloadData()
         refreshControl.endRefreshing()
     }
 
-    private func exportSelectedWorkouts() {
-        let alert = UIAlertController(title: NSLocalizedString("actionSheet.formatSelection.title", comment: "Format Selection Title"),
-                                      message: NSLocalizedString("actionSheet.formatSelection.content", comment: "Format Selection Content"),
-                                      preferredStyle: .actionSheet)
-
-        alert.addAction(UIAlertAction(title: "GPX", style: .default, handler: {(_: UIAlertAction) in
-            self.handleExport(.gpx)
-        }))
-
-        alert.addAction(UIAlertAction(title: "Fit", style: .default, handler: {(_: UIAlertAction) in
-            //Sign out action
-            self.handleExport(.fit)
-        }))
-
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-
-        self.present(alert, animated: true)
-    }
-    private func handleExport(_ format: ExportFileType) {
+    func loadSelectedWorkouts(completion: @escaping ([Workout]) -> Void) {
         guard let selectedWorkouts = tableView.indexPathsForSelectedRows else { return }
 
         var workouts = [Workout]()
@@ -115,107 +88,74 @@ class WorkoutsTableViewController: UITableViewController {
         for index in selectedWorkouts {
             if let section = tableSections?[index.section], let workout = workoutSections[section]?[index.row] {
                 group.enter()
-                workoutStore.heartRate(for: workout) { (rates, error) in
-                    guard let heartRateSamples = rates, error == nil else {
-                        print(error!.localizedDescription)
-                        return
-                    }
+                workoutStore.heartRate(for: workout) { result in
+                    switch result {
+                    case .success(let heartRateSamples):
+                        self.workoutStore.route(for: workout) { result in
+                            switch result {
+                            case .success(let locations):
+                                workouts.append(Workout(workout: workout, locations: locations, heartRate: heartRateSamples))
+                                group.leave()
+                            case .failure(let error):
+                                print(error.localizedDescription)
 
-                    self.workoutStore.route(for: workout) { (maybeLocations, error) in
-                        guard let locations = maybeLocations, error == nil else {
-                            print(error!.localizedDescription)
-                            return
+                                group.leave()
+                            }
                         }
+                    case .failure(let error):
+                        print(error.localizedDescription)
 
-                        workouts.append(Workout(workout: workout, route: locations, heartRate: heartRateSamples))
                         group.leave()
                     }
                 }
             }
         }
 
-        group.wait()
-
-        var targetURLs = [URL]()
-
-        let fileExportGroup = DispatchGroup()
-
-        for workout in workouts {
-            fileExportGroup.enter()
-            workout.writeFile(format) { targetURL in
-                if let targetURL = targetURL {
-                    targetURLs.append(targetURL)
-                }
-
-                fileExportGroup.leave()
-            }
-        }
-
-        fileExportGroup.notify(queue: .main) {
-            if targetURLs.count > 0 {
-                let activityViewController = UIActivityViewController(activityItems: targetURLs, applicationActivities: nil)
-                if let popoverPresentationController = activityViewController.popoverPresentationController {
-                    popoverPresentationController.barButtonItem = nil
-                }
-                self.present(activityViewController, animated: true)
-            }
+        group.notify(queue: .main) {
+            completion(workouts)
         }
     }
 
     // MARK: UI
 
     private func setupUI() {
-        self.tableView.register(UINib(nibName: "WorkoutTableViewCell", bundle: nil), forCellReuseIdentifier: tableCellIdentifier)
+        tableView.register(UINib(nibName: "WorkoutTableViewCell", bundle: nil), forCellReuseIdentifier: tableCellIdentifier)
 
-        self.refreshControl?.addTarget(self, action: #selector(handleRefresh(refreshControl:)), for: UIControl.Event.valueChanged)
+        refreshControl?.addTarget(self, action: #selector(handleRefresh(refreshControl:)), for: UIControl.Event.valueChanged)
 
-        self.navigationController?.setToolbarHidden(true, animated: false)
-
-        sharingBarButtonItem.isEnabled = false
-        setBarButtonItems()
+        navigationController?.setToolbarHidden(true, animated: false)
     }
 
-    private func setBarButtonItems() {
-        if self.tableView.isEditing {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(setEditTable(_:)))
+    func setEditTable() {
+        if tableView.isEditing {
+            tableView.setEditing(false, animated: true)
+            navigationController?.setToolbarHidden(true, animated: true)
         } else {
-            let buttonTitle = NSLocalizedString("bar.button.select", comment: "Bar Button: Select Workouts")
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: buttonTitle,
-                                                                     style: .plain,
-                                                                     target: self,
-                                                                     action: #selector(setEditTable(_:)))
-        }
-    }
-
-    @IBAction func setEditTable(_ sender: Any) {
-        sharingBarButtonItem.isEnabled = false
-
-        if self.tableView.isEditing {
-            self.tableView.setEditing(false, animated: true)
-            self.navigationController?.setToolbarHidden(true, animated: true)
-        } else {
-            self.tableView.setEditing(true, animated: true)
-            self.navigationController?.setToolbarHidden(false, animated: true)
-        }
-
-        setBarButtonItems()
-    }
-
-    @IBAction func didPressShareBarButtonItem(_ sender: UIBarButtonItem) {
-        exportSelectedWorkouts()
-    }
-
-    private func setSharingBarButtonItem() {
-        if let selectedWorkouts = tableView.indexPathsForSelectedRows, selectedWorkouts.count > 0 {
-            sharingBarButtonItem.isEnabled = true
-        } else {
-            sharingBarButtonItem.isEnabled = false
+            tableView.setEditing(true, animated: true)
+            navigationController?.setToolbarHidden(false, animated: true)
         }
     }
 
     // MARK: UITableViewDataSource, UITableViewDelegate
 
     override func numberOfSections(in tableView: UITableView) -> Int {
+        if workoutSections.isEmpty {
+            let emptyLabel = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
+            emptyLabel.text = NSLocalizedString("workouts.loading", comment: "")
+            if #available(iOS 13.0, *) {
+                emptyLabel.textColor = .label
+            } else {
+                emptyLabel.textColor = .black
+            }
+            emptyLabel.textAlignment = .center
+
+            tableView.backgroundView = emptyLabel
+            tableView.separatorStyle = .none
+        } else {
+            tableView.separatorStyle = .singleLine
+            tableView.backgroundView = nil
+        }
+
         return workoutSections.count
     }
 
@@ -245,39 +185,21 @@ class WorkoutsTableViewController: UITableViewController {
         cell.distanceLabel.text = workout.formattedTotalDistance
         cell.durationLabel.text = workout.duration.formatted
 
-        switch workout.workoutActivityType {
-        case .running:
-            cell.imageLabel.image = #imageLiteral(resourceName: "Run")
-        case .cycling:
-            cell.imageLabel.image = #imageLiteral(resourceName: "Cycle")
-        case .swimming:
-            cell.imageLabel.image = #imageLiteral(resourceName: "Swim")
-        case .walking:
-            cell.imageLabel.image = #imageLiteral(resourceName: "Still")
-        case .hiking:
-            cell.imageLabel.image = #imageLiteral(resourceName: "Hike")
-        default:
-            cell.imageLabel.image = #imageLiteral(resourceName: "Default")
-        }
-
-        if #available(iOS 13.0, *) {
-            cell.imageLabel.tintColor = .label
-        } else {
-            cell.imageLabel.tintColor = .black
-        }
+        cell.imageLabel.image = workout.workoutActivityType.image
+        cell.imageLabel.tintColor = workout.workoutActivityType.color
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
-            setSharingBarButtonItem()
+            delegate?.didSelectWorkouts(count: tableView.indexPathsForSelectedRows?.count)
         } else {
-            self.performSegue(withIdentifier: WorkoutsSegues.detailViewSegue.rawValue, sender: indexPath)
+            performSegue(withIdentifier: WorkoutsSegues.detailViewSegue.rawValue, sender: indexPath)
         }
     }
 
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
-            setSharingBarButtonItem()
+            delegate?.didSelectWorkouts(count: tableView.indexPathsForSelectedRows?.count)
         }
     }
 
